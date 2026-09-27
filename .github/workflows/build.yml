@@ -1,0 +1,113 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Create Android project structure
+        run: |
+          mkdir -p app/src/main/java/com/discipline/waroflife
+          mkdir -p app/src/main/res/values
+          mkdir -p app/src/main/assets
+
+          cp MainActivity.java app/src/main/java/com/discipline/waroflife/
+          cp AlarmReceiver.java app/src/main/java/com/discipline/waroflife/
+          cp BootReceiver.java app/src/main/java/com/discipline/waroflife/
+
+          cp AndroidManifest.xml app/src/main/AndroidManifest.xml
+          cp colors.xml app/src/main/res/values/colors.xml
+          cp themes.xml app/src/main/res/values/themes.xml
+          cp index.html app/src/main/assets/index.html
+
+      - name: Create Gradle files
+        run: |
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
+          rootProject.name = "TheDisciplineWarOfLife"
+          include ":app"
+          EOF
+
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+
+          mkdir -p app
+
+          cat > app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'com.discipline.waroflife'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'com.discipline.waroflife'
+                  minSdk 23
+                  targetSdk 35
+                  versionCode 1
+                  versionName '1.0'
+              }
+          }
+
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.7.0'
+              implementation 'androidx.core:core:1.15.0'
+          }
+          EOF
+
+      - name: Build APK
+        run: gradle --no-daemon assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: The-Discipline-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
