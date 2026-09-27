@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>"The Discipline" war of Life</title>
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card-bg: #141721;
+      --card-border: #23293a;
+      --gold: #d97706;
+      --gold-bright: #f59e0b;
+      --gold-glow: rgba(245, 158, 11, 0.25);
+      --red: #ef4444;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--text); padding: 12px; padding-bottom: 50px; }
+    header { text-align: center; padding: 16px 8px 12px; border-bottom: 1px solid var(--card-border); margin-bottom: 16px; }
+    header h1 { font-size: 1.5rem; color: var(--gold-bright); text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 0 12px var(--gold-glow); }
+    header p { font-size: 0.82rem; color: var(--muted); margin-top: 4px; font-weight: 500; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 18px rgba(0,0,0,0.5); }
+    .card-title { font-size: 1.05rem; color: var(--gold-bright); font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border-left: 3px solid var(--gold); padding-left: 8px; }
+    
+    /* Alarm Box */
+    .alarm-box { background: #0c0e14; border: 1px solid #1e2433; border-radius: 10px; padding: 14px; text-align: center; }
+    .alarm-time { font-size: 2.2rem; font-weight: bold; color: var(--gold-bright); letter-spacing: 2px; }
+    .alarm-status { font-size: 0.85rem; color: #10b981; margin: 4px 0 10px; font-weight: 600; }
+    .file-input-group { margin: 8px 0; text-align: left; }
+    .file-input-group label { font-size: 0.76rem; color: var(--muted); display: block; margin-bottom: 3px; }
+    input[type="file"] { width: 100%; font-size: 0.75rem; color: var(--muted); background: #161a24; padding: 6px; border-radius: 6px; border: 1px solid var(--card-border); }
+
+    /* Routine Steps */
+    .step-item { display: flex; align-items: center; justify-content: space-between; background: #0f121a; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--gold); }
+    .step-text h4 { font-size: 0.88rem; color: #fff; margin-bottom: 2px; }
+    .step-text p { font-size: 0.75rem; color: var(--muted); }
+    .step-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--gold); cursor: pointer; }
+
+    /* Mantra Counter */
+    .target-bar { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+    .btn-target { background: #181d29; border: 1px solid var(--card-border); color: var(--muted); padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+    .btn-target.active { background: var(--gold); color: #000; border-color: var(--gold-bright); box-shadow: 0 0 10px var(--gold-glow); }
+    .count-number { font-size: 3.5rem; font-weight: 800; color: #fde047; text-align: center; margin: 6px 0; text-shadow: 0 0 18px rgba(253, 224, 71, 0.3); }
+    .target-info { text-align: center; font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+    .tap-area { width: 100%; padding: 28px; background: linear-gradient(145deg, #1b202c, #131722); border: 2px dashed var(--gold); border-radius: 12px; color: var(--gold-bright); font-size: 1.3rem; font-weight: bold; letter-spacing: 1px; cursor: pointer; text-align: center; transition: all 0.1s; }
+    .tap-area:active { transform: scale(0.97); background: #222938; }
+    .reset-btn { margin-top: 10px; background: #232938; color: var(--muted); border: none; padding: 7px 16px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; display: block; margin-left: auto; margin-right: auto; }
+
+    /* Media & Uploads */
+    .playlist { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .track-item { display: flex; align-items: center; justify-content: space-between; background: #0c0e14; padding: 9px 12px; border-radius: 8px; border: 1px solid #1a202d; font-size: 0.82rem; }
+    .track-title { max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #e2e8f0; }
+    .btn-sm { padding: 5px 10px; border-radius: 5px; font-size: 0.75rem; font-weight: bold; border: none; cursor: pointer; }
+    .btn-play { background: var(--gold); color: #000; margin-right: 4px; }
+    .btn-del { background: var(--red); color: #fff; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+    .gallery-card { position: relative; border-radius: 8px; overflow: hidden; height: 130px; background: #0c0e14; border: 1px solid var(--card-border); }
+    .gallery-card img { width: 100%; height: 100%; object-fit: cover; }
+    .btn-del-img { position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.85); color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 0.75rem; }
+
+    /* Dialog Modal */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; padding: 20px; }
+    .modal-card { background: #161b26; border: 2px solid var(--gold); border-radius: 14px; padding: 20px; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 0 25px rgba(245, 158, 11, 0.4); }
+    .modal-title { font-size: 1.15rem; color: #fde047; font-weight: bold; margin-bottom: 10px; }
+    .modal-body { font-size: 0.92rem; line-height: 1.5; color: #f1f5f9; margin-bottom: 18px; text-align: justify; }
+    .btn-dismiss { background: var(--gold); color: #000; border: none; font-weight: bold; padding: 10px 24px; border-radius: 8px; font-size: 0.95rem; cursor: pointer; width: 100%; }
+    .btn-snooze { background: #334155; color: #f8fafc; border: none; font-weight: bold; padding: 8px 24px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; width: 100%; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>"The Discipline" war of Life</h1>
+    <p>Kartavya • Karam • Anushasan • Yoddha Marg</p>
+  </header>
+
+  <!-- 1. ALARM & ROUTINE SECTION (4:30 AM) -->
+  <div class="card">
+    <div class="card-title">
+      <span>Subah Ka Sankalp & Alarm</span>
+      <span style="font-size: 0.75rem; color: #10b981;">Active</span>
+    </div>
+
+    <div class="alarm-box">
+      <div class="alarm-time" id="alarmTimeText">04:30 AM</div>
+      <div class="alarm-status">Daily Discipline Alarm Scheduled</div>
+
+      <div class="file-input-group">
+        <label>Aakashwani Alarm Sound (Default/Upload):</label>
+        <input type="file" id="aakashwaniUpload" accept="audio/*">
+      </div>
+
+      <div class="file-input-group">
+        <label>Mahadev Ji Warning Voice (Snooze Alarm):</label>
+        <input type="file" id="mahadevUpload" accept="audio/*">
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <button class="btn-sm btn-play" style="flex: 1; padding: 8px;" onclick="testAlarm(false)">Test 4:30 Alarm</button>
+        <button class="btn-sm btn-del" style="flex: 1; padding: 8px;" onclick="testAlarm(true)">Test Snooze Warning</button>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px;">
+      <div style="font-size: 0.82rem; color: var(--gold-bright); font-weight: 600; margin-bottom: 8px;">Dincharya Sanket (Pop-up Schedule):</div>
+      <div class="step-item">
+        <div class="step-text">
+          <h4>1. Uthkar Snan</h4>
+          <p>04:30 AM - Sharirik shuddhi evam sakaratmak urja</p>
+        </div>
+        <input type="checkbox">
+      </div>
+      <div class="step-item">
+        <div class="step-text">
+          <h4>2. Laddu Gopal Ji Ki Seva</h4>
+          <p>15 Minute - Nitya shringar, aarti aur samarpana</p>
+        </div>
+        <input type="checkbox">
+      </div>
+      <div class="step-item">
+        <div class="step-text">
+          <h4>3. Bhog Vyavastha & Nasta</h4>
+          <p>15 Minute - Gopal ji ka bhog aur paushtik aahar</p>
+        </div>
+        <input type="checkbox">
+      </div>
+      <div class="step-item">
+        <div class="step-text">
+          <h4>4. Martial Arts Abhyas</h4>
+          <p>15 Minute - Utkrasht koti ke yoddha ka prashikshan</p>
+        </div>
+        <input type="checkbox">
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. MANTRA CHANTING COUNTER (108 / 1001) -->
+  <div class="card">
+    <div class="card-title">
+      <span>Mantra Jaap Counter</span>
+      <span id="targetStatusText" style="font-size: 0.78rem; color: var(--gold);">Target: 108</span>
+    </div>
+
+    <div class="target-bar">
+      <button class="btn-target active" id="btn108" onclick="setCountTarget(108)">108 Baar</button>
+      <button class="btn-target" id="btn1001" onclick="setCountTarget(1001)">1001 Baar</button>
+      <button class="btn-target" id="btnFree" onclick="setCountTarget(0)">Anant (Free)</button>
+    </div>
+
+    <div class="count-number" id="countDisplay">0</div>
+    <div class="target-info" id="targetInfo">Lakshya: 108 Jaap Poore Karein</div>
+
+    <button class="tap-area" onclick="handleTap()">SPARSH KAREN (JAAP)</button>
+    <button class="reset-btn" onclick="resetJaap()">Counter Reset</button>
+  </div>
+
+  <!-- 3. MP3 AUDIO HUB (HANUMAN CHALISA, RAM NAAM, TAI-CHI, OM) -->
+  <div class="card">
+    <div class="card-title">
+      <span>Sadhana Sangeet & Bhajan Hub</span>
+    </div>
+    <audio id="globalPlayer" controls style="width: 100%; margin-bottom: 12px; outline: none;"></audio>
+    <div class="file-input-group">
+      <label>Naye Bhajan / Sangeet MP3 Upload Karein:</label>
+      <input type="file" id="audioUploadInput" accept="audio/*" multiple onchange="onAudioFilesUploaded(event)">
+    </div>
+    <div class="playlist" id="playlistContainer"></div>
+  </div>
+
+  <!-- 4. INSPIRATION & BHAGWAN PHOTOS -->
+  <div class="card">
+    <div class="card-title">
+      <span>Prerna & Bhagwan Photo Sangrah</span>
+    </div>
+    <div class="file-input-group">
+      <label>Nayi Photos Upload Karein:</label>
+      <input type="file" accept="image/*" multiple onchange="onImageFilesUploaded(event)">
+    </div>
+    <div class="gallery-grid" id="galleryContainer"></div>
+  </div>
+
+  <!-- MODAL POP-UP (ALARM & NOTIFICATION) -->
+  <div class="modal-overlay" id="alarmModal">
+    <div class="modal-card">
+      <div class="modal-title" id="modalHeading">Aakashwani Sanket!</div>
+      <div class="modal-body" id="modalDescription">
+        Uthho Vats! 04:30 AM ho gaye hain. Snan karein, fir 15 min Laddu Gopal ji ki seva, 15 min bhog aur nashta, aur fir Martial Arts abhyas me lagein!
+      </div>
+      <button class="btn-dismiss" onclick="dismissAlarm()">Aadesh Sweekar Hai</button>
+      <button class="btn-snooze" id="snoozeButton" onclick="triggerSnoozeWarning()">Snooze (5 Min Let)</button>
+    </div>
+  </div>
+
+  <script>
+    // --- 1. DOUBLE TAP BACK TO EXIT & PAGE BACK ---
+    let lastBackPressedTime = 0;
+    history.pushState(null, null, location.href);
+    window.addEventListener('popstate', function (event) {
+      const now = new Date().getTime();
+      if (now - lastBackPressedTime < 2000) {
+        history.back();
+      } else {
+        lastBackPressedTime = now;
+        history.pushState(null, null, location.href);
+        showToast("Exit karne ke liye ek baar aur back dabayein.");
+      }
+    });
+
+    function showToast(msg) {
+      const div = document.createElement('div');
+      div.innerText = msg;
+      div.style.position = 'fixed';
+      div.style.bottom = '30px';
+      div.style.left = '50%';
+      div.style.transform = 'translateX(-50%)';
+      div.style.background = '#d97706';
+      div.style.color = '#000';
+      div.style.padding = '8px 16px';
+      div.style.borderRadius = '20px';
+      div.style.fontSize = '0.82rem';
+      div.style.fontWeight = 'bold';
+      div.style.zIndex = '100000';
+      document.body.appendChild(div);
+      setTimeout(() => div.remove(), 2000);
+    }
+
+    // --- 2. MANTRA COUNTER LOGIC ---
+    let jaapCount = 0;
+    let jaapTarget = 108;
+    const countDisplay = document.getElementById('countDisplay');
+    const targetStatusText = document.getElementById('targetStatusText');
+    const targetInfo = document.getElementById('targetInfo');
+
+    function setCountTarget(val) {
+      jaapTarget = val;
+      document.querySelectorAll('.btn-target').forEach(b => b.classList.remove('active'));
+      if (val === 108) document.getElementById('btn108').classList.add('active');
+      else if (val === 1001) document.getElementById('btn1001').classList.add('active');
+      else document.getElementById('btnFree').classList.add('active');
+
+      targetStatusText.innerText = val === 0 ? "Target: Anant" : "Target: " + val;
+      targetInfo.innerText = val === 0 ? "Bina kisi seema ke jap jaari rakhein" : "Lakshya: " + val + " Jaap Poore Karein";
+    }
+
+    function handleTap() {
+      jaapCount++;
+      countDisplay.innerText = jaapCount;
+      if (navigator.vibrate) navigator.vibrate(40);
+      if (jaapTarget > 0 && jaapCount === jaapTarget) {
+        alert("Divya Sankalp Poora Hua! " + jaapTarget + " Baar Jaap Safal Hua!");
+      }
+    }
+
+    function resetJaap() {
+      if (confirm("Kya aap jaap counter reset karna chahte hain?")) {
+        jaapCount = 0;
+        countDisplay.innerText = 0;
+      }
+    }
+
+    // --- 3. AUDIO PLAYLIST LOGIC ---
+    const globalPlayer = document.getElementById('globalPlayer');
+    const playlistContainer = document.getElementById('playlistContainer');
+    let playlist = [
+      { name: "Sita Ram Naam Jaap (Non-Stop)", url: "" },
+      { name: "Shri Hanuman Chalisa (Full MP3)", url: "" },
+      { name: "Tai-Chi Qi Gong Peace Music", url: "" },
+      { name: "Om 108 Times Meditation", url: "" }
+    ];
+
+    function renderPlaylist() {
+      playlistContainer.innerHTML = '';
+      playlist.forEach((track, idx) => {
+        const item = document.createElement('div');
+        item.className = 'track-item';
+        item.innerHTML = `
+          <span class="track-title">${idx + 1}. ${track.name}</span>
+          <div>
+            <button class="btn-sm btn-play" onclick="playTrack(${idx})">${track.url ? 'Play' : 'Browse'}</button>
+            <button class="btn-sm btn-del" onclick="deleteTrack(${idx})">Del</button>
+          </div>
+        `;
+        playlistContainer.appendChild(item);
+      });
+    }
+    renderPlaylist();
+
+    function onAudioFilesUploaded(e) {
+      const files = Array.from(e.target.files);
+      files.forEach(f => {
+        const url = URL.createObjectURL(f);
+        playlist.push({ name: f.name, url: url });
+      });
+      renderPlaylist();
+    }
+
+    function playTrack(idx) {
+      if (!playlist[idx].url) {
+        alert("Kripya is bhajan ya mantra ka MP3 file upload karein.");
+        document.getElementById('audioUploadInput').click();
+        return;
+      }
+      globalPlayer.src = playlist[idx].url;
+      globalPlayer.play();
+    }
+
+    function deleteTrack(idx) {
+      playlist.splice(idx, 1);
+      renderPlaylist();
+    }
+
+    // --- 4. GALLERY PHOTO LOGIC ---
+    const galleryContainer = document.getElementById('galleryContainer');
+    function onImageFilesUploaded(e) {
+      const files = Array.from(e.target.files);
+      files.forEach(f => {
+        const url = URL.createObjectURL(f);
+        const card = document.createElement('div');
+        card.className = 'gallery-card';
+        card.innerHTML = `
+          <img src="${url}" alt="Photo">
+          <button class="btn-del-img" onclick="this.parentElement.remove()">✕</button>
+        `;
+        galleryContainer.appendChild(card);
+      });
+    }
+
+    // --- 5. ALARM & SNOOZE MAHADEV WARNING SYSTEM ---
+    let aakashwaniAudio = null;
+    let mahadevAudio = null;
+    const modal = document.getElementById('alarmModal');
+
+    document.getElementById('aakashwaniUpload').addEventListener('change', function(e) {
+      if(e.target.files[0]) aakashwaniAudio = new Audio(URL.createObjectURL(e.target.files[0]));
+    });
+
+    document.getElementById('mahadevUpload').addEventListener('change', function(e) {
+      if(e.target.files[0]) mahadevAudio = new Audio(URL.createObjectURL(e.target.files[0]));
+    });
+
+    // Subah 4:30 baje trigger hone ka checker
+    let alarmAlreadyFired = false;
+    setInterval(() => {
+      const now = new Date();
+      if (now.getHours() === 4 && now.getMinutes() === 30 && !alarmAlreadyFired) {
+        alarmAlreadyFired = true;
+        triggerAlarmPopup();
+      }
+      if (now.getMinutes() !== 30) {
+        alarmAlreadyFired = false;
+      }
+    }, 1000);
+
+    function triggerAlarmPopup() {
+      document.getElementById('modalHeading').innerText = "Aakashwani: Yoddha Sankalpa!";
+      document.getElementById('modalDescription').innerText = "Uthho Vats! 04:30 AM ho chuke hain. Uthkar pehle snan karein, fir 15 min Laddu Gopal ji ki seva, 15 min me bhog aur nashta, aur uske pashchat apne Martial Arts abhyas me poori urja ke sath jutein!";
+      modal.style.display = 'flex';
+      if (aakashwaniAudio) {
+        aakashwaniAudio.loop = true;
+        aakashwaniAudio.play();
+      }
+    }
+
+    function triggerSnoozeWarning() {
+      if (aakashwaniAudio) aakashwaniAudio.pause();
+      document.getElementById('modalHeading').innerText = "Mahadev Ka Sandesh (Krodhit / Aadesh)!";
+      document.getElementById('modalDescription').innerText = "“Uthho Putra! Kya tumhe tumhara kartavya, Karam, aur Anushasan yaad nahi raha? Kya mujhe yeh tumhe bar-bar batana padega ki tum is prithvi par ek mahatvapurna uddeshya ke liye janme ho? Utho aur apna karam karo, tumhe is duniya ke liye ek Utkrasht koti ke yoddha ka udaharan banna hai!”";
+      if (mahadevAudio) {
+        mahadevAudio.play();
+      } else {
+        // Fallback Web Speech synthesis agar file upload na ho
+        if ('speechSynthesis' in window) {
+          const utter = new SpeechSynthesisUtterance("Uthho Putra! Kya tumhe tumhara kartavya, Karam, aur Anushasan yaad nahi raha? Utho aur apna karam karo, tumhe ek utkrasht koti ka yoddha banna hai!");
+          utter.lang = 'hi-IN';
+          utter.pitch = 0.8;
+          utter.rate = 0.85;
+          window.speechSynthesis.speak(utter);
+        }
+      }
+    }
+
+    function dismissAlarm() {
+      modal.style.display = 'none';
+      if (aakashwaniAudio) { aakashwaniAudio.pause(); aakashwaniAudio.currentTime = 0; }
+      if (mahadevAudio) { mahadevAudio.pause(); mahadevAudio.currentTime = 0; }
+    }
+
+    function testAlarm(isSnooze) {
+      if(isSnooze) {
+        triggerSnoozeWarning();
+        modal.style.display = 'flex';
+      } else {
+        triggerAlarmPopup();
+      }
+    }
+  </script>
+
+<style>
+  .ai-box{background:#0c0e14;border:1px solid #23293a;border-radius:12px;padding:14px;margin-top:10px}
+  .ai-box textarea{width:100%;min-height:82px;background:#161a24;color:#f8fafc;border:1px solid #30384c;border-radius:8px;padding:10px;resize:vertical}
+  .ai-row{display:flex;gap:8px;margin-top:8px}
+  .ai-row input{flex:1;background:#161a24;color:#f8fafc;border:1px solid #30384c;border-radius:8px;padding:9px}
+  .ai-btn{background:#f59e0b;color:#000;border:0;border-radius:8px;padding:9px 14px;font-weight:800}
+  .ai-output{white-space:pre-wrap;line-height:1.45;color:#e2e8f0;margin-top:10px;background:#10141d;border-radius:8px;padding:10px;min-height:48px}
+  .small-note{font-size:.72rem;color:#94a3b8;margin-top:6px}
+</style>
+
+<script>
+/* ===== Persistent storage: IndexedDB ===== */
+(function(){
+  const DB_NAME='discipline_war_life_v2', DB_VER=1;
+  let dbPromise = new Promise((resolve,reject)=>{
+    const req=indexedDB.open(DB_NAME,DB_VER);
+    req.onupgradeneeded=()=>{ const db=req.result;
+      if(!db.objectStoreNames.contains('media')) db.createObjectStore('media',{keyPath:'id',autoIncrement:true});
+      if(!db.objectStoreNames.contains('settings')) db.createObjectStore('settings',{keyPath:'key'});
+    };
+    req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
+  });
+  const tx=(store,mode,fn)=>dbPromise.then(db=>new Promise((resolve,reject)=>{
+    const t=db.transaction(store,mode), s=t.objectStore(store), r=fn(s);
+    if(r && r.onsuccess!==undefined){r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)}
+    else {t.oncomplete=()=>resolve(r);t.onerror=()=>reject(t.error)}
+  }));
+  window.DWDB={
+    addMedia:(kind,name,blob)=>tx('media','readwrite',s=>s.add({kind,name,blob,created:Date.now()})),
+    allMedia:()=>tx('media','readonly',s=>s.getAll()),
+    delMedia:(id)=>tx('media','readwrite',s=>s.delete(id)),
+    set:(key,value)=>tx('settings','readwrite',s=>s.put({key,value})),
+    get:(key)=>tx('settings','readonly',s=>s.get(key))
+  };
+
+  async function blobUrl(blob){ return URL.createObjectURL(blob); }
+
+  // Restore persistent media after the page loads.
+  window.addEventListener('load', async ()=>{
+    try{
+      const items=await DWDB.allMedia();
+      for(const x of items){
+        if(x.kind==='audio'){
+          playlist.push({name:x.name,url:await blobUrl(x.blob),persistentId:x.id});
+        } else if(x.kind==='image'){
+          const url=await blobUrl(x.blob);
+          const card=document.createElement('div'); card.className='gallery-card'; card.dataset.pid=x.id;
+          card.innerHTML=`<img src="${url}" alt="Photo"><button class="btn-del-img">✕</button>`;
+          card.querySelector('.btn-del-img').onclick=async()=>{await DWDB.delMedia(x.id);card.remove()};
+          galleryContainer.appendChild(card);
+        }
+      }
+      renderPlaylist();
+    }catch(e){console.warn('Persistent media restore failed',e)}
+  });
+
+  const oldAudio=window.onAudioFilesUploaded;
+  window.onAudioFilesUploaded=async function(e){
+    const files=Array.from(e.target.files||[]);
+    for(const f of files){
+      const id=await DWDB.addMedia('audio',f.name,f);
+      playlist.push({name:f.name,url:URL.createObjectURL(f),persistentId:id});
+    }
+    renderPlaylist(); e.target.value='';
+  };
+
+  const oldImage=window.onImageFilesUploaded;
+  window.onImageFilesUploaded=async function(e){
+    const files=Array.from(e.target.files||[]);
+    for(const f of files){
+      const id=await DWDB.addMedia('image',f.name,f);
+      const url=URL.createObjectURL(f);
+      const card=document.createElement('div'); card.className='gallery-card'; card.dataset.pid=id;
+      card.innerHTML=`<img src="${url}" alt="Photo"><button class="btn-del-img">✕</button>`;
+      card.querySelector('.btn-del-img').onclick=async()=>{await DWDB.delMedia(id);card.remove()};
+      galleryContainer.appendChild(card);
+    }
+    e.target.value='';
+  };
+
+  // Persist checklist state.
+  document.addEventListener('change',e=>{
+    if(e.target && e.target.matches('.step-item input[type="checkbox"]')){
+      const states=[...document.querySelectorAll('.step-item input[type="checkbox"]')].map(x=>x.checked);
+      DWDB.set('routineStates',states);
+    }
+  });
+  window.addEventListener('load',async()=>{
+    const r=await DWDB.get('routineStates');
+    if(r && Array.isArray(r.value)){
+      document.querySelectorAll('.step-item input[type="checkbox"]').forEach((x,i)=>x.checked=!!r.value[i]);
+    }
+  });
+
+  // ===== Yoddha AI =====
+  window.addEventListener('load',()=>{
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`
+      <div class="card-title"><span>🤖 Yoddha AI</span><span style="font-size:.72rem;color:#10b981">Internet AI</span></div>
+      <div class="ai-box">
+        <textarea id="aiPrompt" placeholder="Yoddha AI se kuch poochho..."></textarea>
+        <div class="ai-row"><input id="aiKey" type="password" placeholder="AI API key (optional, saved only on this device)"><button class="ai-btn" id="aiAsk">Poochho</button></div>
+        <div class="small-note">AI key ke bina app ka routine/discipline helper chalega. Internet AI ke liye apni API key use karo.</div>
+        <div class="ai-output" id="aiOut">Namaste Yoddha. Apna sankalp likho.</div>
+      </div>`;
+    document.body.insertBefore(card,document.querySelector('.modal-overlay'));
+    const keyEl=document.getElementById('aiKey'), out=document.getElementById('aiOut');
+    DWDB.get('aiKey').then(x=>{if(x&&x.value)keyEl.value=x.value});
+    document.getElementById('aiAsk').onclick=async()=>{
+      const p=document.getElementById('aiPrompt').value.trim(); if(!p)return;
+      const key=keyEl.value.trim(); if(key) await DWDB.set('aiKey',key);
+      out.textContent='Yoddha AI soch raha hai...';
+      if(!key){
+        const q=p.toLowerCase();
+        let a='Aaj ka sankalp chhota rakho: ek kaam chuno, 15 minute bina distraction ke karo, phir agla step lo.';
+        if(q.includes('routine')||q.includes('dincharya')) a='04:30 uthna → snan → Laddu Gopal seva → bhog/nasta → martial arts abhyas. Har step ko complete karke tick karo.';
+        else if(q.includes('jaap')||q.includes('mantra')) a='108 se shuru karo. Har tap ko dhyan se karo; target poora hone par sankalp complete maana jayega.';
+        else if(q.includes('motivat')||q.includes('discipline')) a='Discipline ka rule: mood ka wait mat karo. Bas agla sahi kaam abhi shuru karo.';
+        out.textContent=a; return;
+      }
+      try{
+        const res=await fetch('https://gen.pollinations.ai/v1/chat/completions',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+          body:JSON.stringify({model:'openai/gpt-5.4-nano',messages:[
+            {role:'system',content:'You are Yoddha AI, a calm Hindi/Hinglish discipline coach inside a personal routine app. Be practical, respectful and concise.'},
+            {role:'user',content:p}
+          ]})
+        });
+        const data=await res.json();
+        out.textContent=data?.choices?.[0]?.message?.content || 'AI response nahi mila.';
+      }catch(err){out.textContent='Internet/AI connection check karo. '+err.message}
+    };
+  });
+})();
+</script>
+
+</body>
+</html>
